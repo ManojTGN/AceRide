@@ -1,5 +1,5 @@
 import Home from "./Home";
-import Book from "./Book";
+import Book from "./Book/Book";
 import Rides from "./Rides";
 
 export default function MainContent(props){
