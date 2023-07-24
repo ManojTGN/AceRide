@@ -1,6 +1,6 @@
-import Home from "./Home";
+import Home from "./Home/Home";
 import Book from "./Book/Book";
-import Rides from "./Rides";
+import Rides from "./Rides/Rides";
 
 export default function MainContent(props){
 
