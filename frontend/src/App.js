@@ -1,11 +1,26 @@
 
-import {Route, Routes} from 'react-router-dom';
+import {Route, Routes, useLocation, useNavigate} from 'react-router-dom';
+import env from 'react-dotenv';
 
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import Redirect from './pages/Redirect';
+import { useEffect } from 'react';
+import axios from 'axios';
 
 function App() {
+    const navigate = useNavigate();
+    const location = useLocation();
+    useEffect(()=>{
+        axios({
+            method: 'POST',
+            url:`http://localhost:${env.SERVER_PORT}/`,
+            headers:{"Content-Type": "application/json" },
+            data:{}
+        }).then((res)=>{}).catch((reason)=>{
+            if(location.pathname !== '/login' && reason && reason.response.status === 401) navigate('../login');
+        });
+    },[]);
     return (
         <Routes>
             <Route path="/login" element={<Register/>}/>

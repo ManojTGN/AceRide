@@ -3,7 +3,7 @@ import FromPoint from "./FromPoint";
 import ToPoint from "./ToPoint";
 import FinalDetail from "./FinalDetail";
 import VehiclePoint from "./VehiclePoint";
-import Payment from "./Payement";
+import Payment from "./Payment";
 
 export default function SideBar(){
     
@@ -12,7 +12,7 @@ export default function SideBar(){
         from:null,to:null,
         people:NaN,vehicle:null,price:NaN,
         date:0,time:0,dt_type:"now",
-        paymentType:null
+        paymentType:null,paymentStatus:false
     });
     const PAGES = {
         0:<FromPoint setPage={setPage} setData={setData} data={data} prev={null} next={1} />,

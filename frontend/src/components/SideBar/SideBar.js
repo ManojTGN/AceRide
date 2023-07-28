@@ -4,7 +4,7 @@ import Button from "./Button";
 export default function SideBar(props){
     let navigate = useNavigate();
     return(
-        <div className="w-1/6 h-full bg-neutral-100 ">
+        <div className="w-1/6 h-full bg-neutral-100 fixed">
             <div className="w-full p-2 flex items-center justify-center">
             <div className="w-full box-border h-8 gap-5 bg-emerald-700 rounded text-white flex items-center justify-center">
                 <i className="fa-solid fa-car-rear"></i> AceRide

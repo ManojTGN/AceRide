@@ -7,9 +7,9 @@ export default function Rides(){
     const [active,setActive] = useState('ACTIVE');//ACTIVE | OLDER | FRIENDS | ALL
     const PAGES = [
         { type:'ACTIVE',name:'Active Rides',icon:<i className="fa-solid fa-certificate"></i> },
-        { type:'OLDER',name:'Older Rides',icon:<i className="fa-solid fa-clock-rotate-left"></i> },
+        { type:'ALL',name:'All Rides',icon:<i className="fa-solid fa-clock-rotate-left"></i> },
         { type:'FRIENDS',name:'Friends Ride',icon:<i className="fa-solid fa-user-group"></i> },
-        { type:'ALL',name:'All Ride',icon:<i className="fa-solid fa-book-atlas"></i> },
+        { type:'FAILED',name:'Failed Ride',icon:<i className="fa-solid fa-ban"></i> },
     ];
 
     return (
@@ -29,9 +29,9 @@ export default function Rides(){
         </div>
         <br/>
         {active==='ACTIVE'?<ActiveRides/>:
-        active==='OLDER'?<OlderRide/>:
+        active==='ALL'?<OlderRide/>:
         active==='FRIENDS'?null:
-        active==='ALL'?null:null}
+        active==='FAILED'?null:null}
 
         </div>
         </div>

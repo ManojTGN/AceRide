@@ -2,12 +2,14 @@ import axios from 'axios';
 import { useEffect, useState, useRef } from 'react';
 import env from "react-dotenv";
 import {useNavigate} from 'react-router-dom'
+axios.defaults.withCredentials = true;
 
 export default function Payment(props){
     let navigate = useNavigate();
     const [loading,setLoading] = useState(false);
     const [booked,setBooked] = useState(null);
     let iconTick = useRef();
+    let iconCross = useRef();
 
     function bookRide(){
         axios({
@@ -20,16 +22,23 @@ export default function Payment(props){
                 if(!booked) setBooked(true);
                 if(loading) setLoading(false);
                 setTimeout(()=>{ iconTick.current.className += ' scale-150';},300);
-            }else{
-                if(!booked) setBooked(false);
-                if(loading) setLoading(false);
             }
+        }).catch((reason)=>{
+            if(!booked) setBooked(false);
+            if(loading) setLoading(false);
+            setTimeout(()=>{ iconCross.current.className += ' scale-150';},300);
+            console.log(reason);
         });   
         if(!loading) setLoading(true);
     }
 
     useEffect(()=>{
-        if(props.data.paymentType === 'cor') bookRide();
+        if(props.data.paymentType === 'cor'){
+            props.data.paymentStatus = false;
+            bookRide();
+        }else{
+            props.data.paymentStatus = true;
+        }
     },[false]);
 
     return (
@@ -55,7 +64,28 @@ export default function Payment(props){
             </div>
         </div>
         </>
-        :booked===false?null:null}
+        :booked===false?
+        <>
+        <div className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-6xl text-red-100'>
+        <i className="fa-solid fa-circle fa-2xl fa-spin"></i>
+        </div>
+        <div className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-6xl text-red-500'>
+            <i ref={iconCross} className={"fa-solid fa-xmark fa-2xl transition-all duration-500 "}></i>
+        </div>
+        <div className='absolute top-3/4 left-1/2 -translate-x-1/2 -translate-y-1/2 text-3xl text-red-500 font-bold'>
+            Ride Booking Failed
+        </div>
+        <div>
+            <div className='w-full h-96 bg-gradient-to-b from-transparent to-white'></div>
+            <div className='w-full h-96 bg-gradient-to-b to-red-400 from-white flex items-end'>
+                <div onClick={()=>navigate('/dashboard')} className="flex w-full p-4 bg-gradient-to-r from-red-100 to-red-200 rounded cursor-pointer">
+                    <div className="w-1/6"> <i className="fa-regular fa-square-check"></i> </div>
+                    <p className="w-full text-right">Ride Book Unsuccessfull</p>
+                </div>
+            </div>
+        </div>
+        </>
+        :null}
         {booked===null?<div className="font-bold text-black text-left px-10 flex flex-col">
             <div className="h-80 flex flex-col gap-2 overflow-scroll no-scrollbar::-webkit-scrollbar no-scrollbar">
                 <p className="text-center">{props.data.paymentType==='cor'?null:<i className="fa-brands fa-google-pay fa-2xl"></i>} {props.data.paymentType==='cor'?null:'Payment'}</p>
