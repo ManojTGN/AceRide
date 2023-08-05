@@ -1,23 +1,31 @@
+import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
+import FilterButton from "../Components/FilterButton";
 import SearchBar from "../Components/Search";
 import env from "react-dotenv";
-import { useNavigate } from "react-router-dom";
-import Ride from "./ride";
 import axios from "axios";
+import Ride from "./ride";
 
-export default function ActiveRides(props){
+
+export default function AllRide(props){
+    const [search,setSearch] = useState('');
+    const [filter,setFilter] = useState([
+        {selected:false,type:'today',value:'Today',icon:<i className="fa-solid fa-calendar-day"></i>},
+        {selected:false,type:'lastWeek',value:'Last Week',icon:<i className="fa-solid fa-calendar-week"></i>},
+        {selected:false,type:'lastMonth',value:'Last Month',icon:<i className="fa-solid fa-calendar-days"></i>},
+        {selected:false,type:'customRange',value:'CustomRange',icon:<i className="fa-solid fa-calendar"></i>},
+        {selected:false,type:'driver',value:'Driver',icon:<i className="fa-solid fa-id-badge"></i>},
+    ]);
 
     const [reloadTrigger,setReloadTrigger] = useState(0);
-    const [search,setSearch] = useState('');
     const [rides,setRides] = useState(null);
     const navigate = useNavigate();
-
     useEffect(()=>{
         axios({
             method: 'POST',
             url:`http://localhost:${env.SERVER_PORT}/`,
             headers:{"Content-Type": "application/json" },
-            data:{getRide:true,rideType:'ACTIVE',filter:null}
+            data:{getRide:true,rideType:'ALL',filter:null}
         }).then((res)=>{
             setRides(res.data);
         }).catch((reason)=>{
@@ -27,21 +35,26 @@ export default function ActiveRides(props){
 
     return (
         <>
-        {rides && rides.length !== 0?
-        <>
-            <div className="p-2 w-full flex gap-5">
-                <SearchBar value={search} set={setSearch} placeholder={'Search Your Active Rides...'}/>
-            </div>
-            <div className="p-2 flex gap-3 w-full">
-                (Todo: Filter Section)
-            </div>
-
-            <br/>
-            <hr className="border-2 border-emerald-500 border-dashed"/>
-            <br/>
-        </>
-        :null}
-
+        {rides && rides.length !== 0?<>
+        <div className="p-2 w-full flex gap-5">
+            <SearchBar value={search} set={setSearch} placeholder={'Search Your Old Rides...'}/>
+        </div>
+        <div className="p-2 flex gap-3 w-full">
+            {filter.map((comp,index)=>{
+                if(comp.selected)
+                return <FilterButton key={index} data={comp} onClick={()=>{let tmpFilter=[...filter];tmpFilter[index][`selected`]=!tmpFilter[index][`selected`];setFilter(tmpFilter)}} />;
+                return null;
+            })}
+            <span className="w-5"></span>
+            {filter.map((comp,index)=>{
+                if(!comp.selected)
+                return <FilterButton key={index} data={comp} onClick={()=>{let tmpFilter=[...filter];tmpFilter[index][`selected`]=!tmpFilter[index][`selected`];setFilter(tmpFilter)}} />;
+                return null
+            })}
+        </div>
+        <br/>
+        <hr className="border-2 border-emerald-500 border-dashed"/>
+        </>:null}
         <div className={"flex flex-col gap-5 items-center "+(rides===null || rides===undefined || (rides && rides.length === 0)?`h-full justify-center`:``)}>
         {
         rides && rides.length !== 0?
@@ -87,7 +100,7 @@ export default function ActiveRides(props){
         rides === null?
             <div className="w-full h-full flex items-center justify-center text-emerald-700 animate-pulse ">
                 <div className="w-1/6 flex justify-end"> <i className="fa-solid fa-circle-notch fa-spin fa-2xl text-9xl"></i> </div>
-                <div className="w-full flex justify-center text-7xl font-bold"> Getting Your Active Rides </div>
+                <div className="w-full flex justify-center text-7xl font-bold"> Getting All Rides </div>
             </div>:
         rides === undefined?
             <div className="w-full flex items-center justify-center text-emerald-700 animate-pulse">

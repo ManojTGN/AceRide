@@ -24,7 +24,7 @@ export default function SideBar(props){
             <div className="flex flex-col gap-2">
                 <p className="mx-2 font-bold">Preference</p>
                 <Button onClick={()=>navigate('../profile')} value="Profile" icon={<i className="fa-solid fa-user"></i>} active={props.selectedPage === 'PROFILE'}></Button>
-                <Button onClick={()=>props.setPage('ADDRESS')} value="Address" icon={<i className="fa-solid fa-address-book"></i>} active={props.selectedPage === 'ADDRESS'}></Button>
+                <Button onClick={()=>navigate('../address')} value="Address" icon={<i className="fa-solid fa-address-book"></i>} active={props.selectedPage === 'ADDRESS'}></Button>
                 <Button onClick={()=>navigate('../settings')} value="Settings" icon={<i className="fa-solid fa-gear"></i>} active={props.selectedPage === 'SETTINGS'}></Button>
             </div>
             <br/>

@@ -7,6 +7,10 @@ export default function MainContent(props){
     return (
         props.selectedPage === 'HOME'? <Home /> :
         props.selectedPage === 'BOOK'? <Book/>:
-        <Rides/>
+        props.selectedPage === 'RIDES'?<Rides/>:
+        props.selectedPage === 'PROFILE'?null:
+        props.selectedPage === 'ADDRESS'?null:
+        props.selectedPage === 'SETTINGS'?null:
+        null
     );
 }

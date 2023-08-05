@@ -3,7 +3,7 @@ require('dotenv').config()
 const cookieParser = require("cookie-parser");
 const jsonwebtoken = require('jsonwebtoken');
 const bodyParser = require("body-parser");
-const { randomInt } = require('crypto');
+const { randomInt, randomBytes } = require('crypto');
 const color = require('./src/colors');
 const express = require('express');
 const path = require('path');
@@ -29,8 +29,9 @@ const userSchema = require('./schemas/user');
 const rideSchema = require('./schemas/ride');
 
 function delay(){
-    for(let i = 0; i < 999999999; i+=2) i--;
-
+    let i = 0;
+    for(i; i < 999999999; i+=2) i--;
+    return i;
 }
 
 app.post('/register',async (req,res)=>{
@@ -69,8 +70,19 @@ app.post('/',async (req,res)=>{
 
     let user = jsonwebtoken.decode(req.cookies.login);
 
+    if('cancelRide' in req.body){
+        await rideSchema.updateOne({_id:req.body._id},{
+            isRideActive:false,
+            isRideStart:false,
+            isRideSuccess:false,
+            failedRideReason:'Cancelled By The User'
+        });
+        res.sendStatus(200);
+        return;
+    }
+
     if('getRide' in req.body){
-        
+        // delay();
         if(req.body.rideType==='ACTIVE'){
             let result = await rideSchema.find({owner:{name:user.name,email:user.email,picture:user.picture},isRideActive:true});
             res.send(result);
@@ -78,8 +90,13 @@ app.post('/',async (req,res)=>{
         }
 
         if(req.body.rideType==='SINGLE'){
-            // delay();
             let result = await rideSchema.findOne({_id:req.body._id});
+            res.send(result);
+            return;
+        }
+
+        if(req.body.rideType==='ALL'){
+            let result = await rideSchema.find({owner:{name:user.name,email:user.email,picture:user.picture}});
             res.send(result);
             return;
         }
@@ -108,6 +125,7 @@ app.post('/',async (req,res)=>{
             totalPeople:req.body.people,
             vehicle:req.body.vehicle,
 
+            rideRating:0,
             isDriverAssigned:false,
             /* driver:0,*/
 
@@ -137,6 +155,12 @@ app.post('/',async (req,res)=>{
             res.sendStatus(406);
         }
         return;
+    }
+
+    if('rateRide' in req.body){
+        await rideSchema.updateOne({_id:req.body._id},{rideRating:req.body.rideRating})
+        res.sendStatus(200);
+        return
     }
 });
 

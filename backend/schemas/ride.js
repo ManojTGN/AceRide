@@ -17,6 +17,7 @@ const rideSchema = new mongoose.Schema({
     totalPeople:{required:true,type:Number},
     vehicle:{required:true,type:String},
 
+    rideRating:{required:true,type:Number},
     isDriverAssigned:{required:true,type:Boolean},
     driver:String,
 

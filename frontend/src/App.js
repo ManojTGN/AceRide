@@ -40,6 +40,7 @@ function App() {
             <Route path="/yourProfile" element={<Dashboard page={'PROFILE'}/>}/>
 
             <Route path="/settings" element={<Dashboard page={'SETTINGS'}/>}/>
+            <Route path="/address" element={<Dashboard page={'ADDRESS'}/>}/>
             <Route path="/options" element={<Dashboard page={'SETTINGS'}/>}/>
 
             <Route path="/404" element={<Redirect redirect={'/dashboard'}/>}/>

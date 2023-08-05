@@ -1,6 +1,6 @@
 import { useState } from "react";
 import ActiveRides from "./Tabs/ActiveRide";
-import OlderRide from "./Tabs/OlderRide";
+import AllRide from "./Tabs/AllRide";
 
 
 export default function Rides(){
@@ -29,7 +29,7 @@ export default function Rides(){
         </div>
         <br/>
         {active==='ACTIVE'?<ActiveRides/>:
-        active==='ALL'?<OlderRide/>:
+        active==='ALL'?<AllRide/>:
         active==='FRIENDS'?null:
         active==='FAILED'?null:null}
 
