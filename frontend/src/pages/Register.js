@@ -28,7 +28,7 @@ export default function Register(){
                                 data:credentialResponse
                             }).then((res)=>{
                                 if(res.status === 200){
-                                    navigate('/');
+                                    navigate('../');
                                 }else{
                                     navigate('../register');
                                 }
