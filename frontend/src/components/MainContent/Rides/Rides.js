@@ -28,6 +28,7 @@ export default function Rides(){
             })}
         </div>
         <br/>
+        
         {active==='ACTIVE'?<ActiveRides/>:
         active==='ALL'?<AllRide/>:
         active==='FRIENDS'?null:

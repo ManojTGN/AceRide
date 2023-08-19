@@ -5,8 +5,8 @@ import Rides from "./Rides/Rides";
 export default function MainContent(props){
 
     return (
-        props.selectedPage === 'HOME'? <Home /> :
-        props.selectedPage === 'BOOK'? <Book/>:
+        props.selectedPage === 'HOME'? <Home data={props.data}/> :
+        props.selectedPage === 'BOOK'? <Book />:
         props.selectedPage === 'RIDES'?<Rides/>:
         props.selectedPage === 'PROFILE'?null:
         props.selectedPage === 'ADDRESS'?null:

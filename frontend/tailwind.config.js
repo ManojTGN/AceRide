@@ -34,10 +34,15 @@ module.exports = {
                 '2%':{opacity:'1'},
                 '100%':{ left: '0px',opacity:'0'},
             },
+            fadeOut: {
+                '0%': { opacity: 0 },
+                '100%': { opacity: 1 },
+            },
         },
         animation: {
             rideLeft: 'rideLeft 0s ease-in-out infinite',
             rideRight: 'rideRight 0s ease-in-out infinite',
+            fade: 'fadeOut 0s ease-in-out'
         }
     },
   },

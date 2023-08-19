@@ -34,6 +34,14 @@ function delay(){
     return i;
 }
 
+/*
+ * LOGGING REQUESTS
+ */
+
+function log(requestURL, requestContent, resCode ){
+    console.log(`${color.FgWhite}[${color.FgGray}${new Date().toLocaleTimeString()}${color.FgWhite}] ${color.FgYellow}${requestURL}${color.FgWhite} -> ${requestContent} ${resCode?`${color.FgGreen}Success`:`${color.FgRed}Failed`}${color.Reset}`);
+}
+
 app.post('/register',async (req,res)=>{
     let rqusr = jsonwebtoken.decode(req.body.credential);
     if(!rqusr){ res.sendStatus(403);return;}
@@ -41,7 +49,7 @@ app.post('/register',async (req,res)=>{
     res.cookie('login',req.body.credential);
     let dbuser = await userSchema.find({email:rqusr.email});
 
-    if(dbuser.length === 0){
+    if(!dbuser || dbuser.length === 0){
         rqusr = await userSchema.create({
             name:rqusr.name,
             email:rqusr.email,
@@ -57,8 +65,9 @@ app.post('/register',async (req,res)=>{
         });
         await rqusr.save();
     }
-    
-    res.sendStatus(200);
+
+    res.sendStatus(200);//dbuser && dbuser.length != 0 ? dbuser[0]:rqusr
+    log('/register',undefined,true);
 });
 
 app.post('/',async (req,res)=>{
@@ -70,6 +79,16 @@ app.post('/',async (req,res)=>{
 
     let user = jsonwebtoken.decode(req.cookies.login);
 
+    if('getHome' in req.body){
+        await delay();
+        let activeRides = await userSchema.findOne({owner:{name:user.name,email:user.email,picture:user.picture},isRideActive:true}); 
+        let _user = await userSchema.findOne({email:user.email});
+        
+        res.send({rides:activeRides,user:_user});
+        log('/','getHome',true);
+        return;
+    }
+
     if('cancelRide' in req.body){
         await rideSchema.updateOne({_id:req.body._id},{
             isRideActive:false,
@@ -78,6 +97,7 @@ app.post('/',async (req,res)=>{
             failedRideReason:'Cancelled By The User'
         });
         res.sendStatus(200);
+        log('/','cancelRide',true);
         return;
     }
 
@@ -86,18 +106,21 @@ app.post('/',async (req,res)=>{
         if(req.body.rideType==='ACTIVE'){
             let result = await rideSchema.find({owner:{name:user.name,email:user.email,picture:user.picture},isRideActive:true});
             res.send(result);
+            log('/','getRide (ACTIVE)',true);
             return;
         }
 
         if(req.body.rideType==='SINGLE'){
             let result = await rideSchema.findOne({_id:req.body._id});
             res.send(result);
+            log('/','getRide (SINGLE)',true);
             return;
         }
 
         if(req.body.rideType==='ALL'){
             let result = await rideSchema.find({owner:{name:user.name,email:user.email,picture:user.picture}});
             res.send(result);
+            log('/','getRide (ALL)',true);
             return;
         }
 
@@ -150,9 +173,12 @@ app.post('/',async (req,res)=>{
 
         await ride.save();
         res.sendStatus(200);
+        log('/','bookRide',true);
+
         }catch(err){
-            console.log(err);
             res.sendStatus(406);
+            log('/','bookRide',false);
+            console.log(err);
         }
         return;
     }
@@ -160,6 +186,7 @@ app.post('/',async (req,res)=>{
     if('rateRide' in req.body){
         await rideSchema.updateOne({_id:req.body._id},{rideRating:req.body.rideRating})
         res.sendStatus(200);
+        log('/','rateRide',true);
         return
     }
 });

@@ -29,6 +29,7 @@ export default function Register(){
                             }).then((res)=>{
                                 if(res.status === 200){
                                     navigate('../');
+                                    window.location.reload();
                                 }else{
                                     navigate('../register');
                                 }
