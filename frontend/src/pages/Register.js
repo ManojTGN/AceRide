@@ -12,8 +12,8 @@ export default function Register(){
             </div>
             <div className="w-full h-full text-center flex items-center justify-center">
                 <div className="w-1/2">
-                    <h1 className="text-4xl">AceRide<i className="fa-regular fa-star mb-0.5"></i></h1>
-                    <p>Create Your Account</p>
+                    <h1 className="text-4xl font-bold">AceRide</h1>
+                    <p>Elevate Your Ride Experience</p>
                     <br/>
                     <hr className="border-2 border-dashed" />
                     <br/>

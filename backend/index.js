@@ -27,6 +27,7 @@ app.use(express.static(path.join(__dirname,'public')));
  */
 const userSchema = require('./schemas/user');
 const rideSchema = require('./schemas/ride');
+const settingsSchema = require('./schemas/settings');
 
 function delay(){
     let i = 0;
@@ -41,6 +42,10 @@ function delay(){
 function log(requestURL, requestContent, resCode ){
     console.log(`${color.FgWhite}[${color.FgGray}${new Date().toLocaleTimeString()}${color.FgWhite}] ${color.FgYellow}${requestURL}${color.FgWhite} -> ${requestContent} ${resCode?`${color.FgGreen}Success`:`${color.FgRed}Failed`}${color.Reset}`);
 }
+
+/* 
+ * REQUEST HANDLING
+ */
 
 app.post('/register',async (req,res)=>{
     let rqusr = jsonwebtoken.decode(req.body.credential);
@@ -64,6 +69,14 @@ app.post('/register',async (req,res)=>{
             ignoredDriver:[],
         });
         await rqusr.save();
+
+        let setting = await settingsSchema.create({
+            email:rqusr.email,
+            language:'en-US',
+            affectSettingLang:false,
+            theme:'emeraldgreen',
+        });
+        await setting.save();
     }
 
     res.sendStatus(200);//dbuser && dbuser.length != 0 ? dbuser[0]:rqusr
@@ -83,8 +96,9 @@ app.post('/',async (req,res)=>{
         await delay();
         let activeRides = await userSchema.findOne({owner:{name:user.name,email:user.email,picture:user.picture},isRideActive:true}); 
         let _user = await userSchema.findOne({email:user.email});
-        
-        res.send({rides:activeRides,user:_user});
+        let settings = await settingsSchema.findOne({email:user.email});
+
+        res.send({rides:activeRides,user:_user,settings});
         log('/','getHome',true);
         return;
     }
@@ -189,6 +203,34 @@ app.post('/',async (req,res)=>{
         log('/','rateRide',true);
         return
     }
+
+    if('getSettings' in req.body){
+        let settings = await settingsSchema.findOne({email:user.email});
+        res.send(settings);
+        log('/','getSettings',true);
+        return;
+    }
+
+    if('setSettings' in req.body){
+        let oldSettings = await settingsSchema.findOne({email:user.email});
+        await settingsSchema.updateOne({email:user.email},{...req.body.settings});
+        await userSchema.updateOne({email:user.email},{...req.body.user});
+
+        if(JSON.stringify(oldSettings) === JSON.stringify(req.body.settings))res.sendStatus(201);
+        else res.sendStatus(200);
+
+        log('/','setSettings',true);
+        return;
+    }
+
+    if('logout' in req.body){
+        res.clearCookie("login");
+        res.sendStatus(200);
+
+        log('/','logout',true);
+        return;
+    }
 });
+
 
 app.listen(process.env.PORT || 3000, ()=>{console.log(`\n${color.FgGreen}AceRide${color.Reset} Backend Server Started At Port ${color.FgYellow}${process.env.PORT || 3000}\n${color.Reset} - ${color.FgBlue}http://localhost:${process.env.PORT || 3000}/\n${color.Reset}`)});

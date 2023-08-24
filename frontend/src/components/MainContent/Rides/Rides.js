@@ -1,26 +1,42 @@
-import { useState } from "react";
+import { useEffect, useReducer, useState } from "react";
 import ActiveRides from "./Tabs/ActiveRide";
 import AllRide from "./Tabs/AllRide";
+import Translate from "../../Translate";
 
 
-export default function Rides(){
+function reducer(staticText,action){
+    if(action.type === 'changeLanguage')
+        return action.payload;
+    return staticText;
+}
+
+export default function Rides(props){
+
+    const [staticText,dipatchText] = useReducer(reducer,{
+        ActiveRides:"Active Rides",
+        AllRides:"All Rides"
+    });
+
     const [active,setActive] = useState('ACTIVE');//ACTIVE | OLDER | FRIENDS | ALL
     const PAGES = [
-        { type:'ACTIVE',name:'Active Rides',icon:<i className="fa-solid fa-certificate"></i> },
-        { type:'ALL',name:'All Rides',icon:<i className="fa-solid fa-clock-rotate-left"></i> },
-        { type:'FRIENDS',name:'Friends Ride',icon:<i className="fa-solid fa-user-group"></i> },
-        { type:'FAILED',name:'Failed Ride',icon:<i className="fa-solid fa-ban"></i> },
+        { type:'ACTIVE',name:staticText.ActiveRides,icon:<i className="fa-solid fa-certificate"></i> },
+        { type:'ALL',name:staticText.AllRides,icon:<i className="fa-solid fa-clock-rotate-left"></i> },
     ];
 
+    useEffect(()=>{
+        if(props.data.settings.language!=='en')
+        Translate(staticText, dipatchText, props.data.settings.language);
+    },[]);
+
     return (
-        <div className="w-full h-full bg-emerald-50 flex flex-col items-center"><br/>
+        <div className={`w-full h-full bg-${props.data.settings.theme}-50 flex flex-col items-center`}><br/>
         <div className="w-5/6">
 
-        <div className="h-44 w-full gap-2 flex items-center justify-center">
+        <div className="h-44 w-full gap-2 flex items-center justify-start">
             {PAGES.map((page,index)=>{
                 return (
                     <div key={index} onClick={()=>setActive(page.type)} className={page.type===active?"w-3/6":"w-1/6"}>
-                        <h1 className={"font-bold text-emerald-900 cursor-pointer transition-transform "+(page.type===active?"text-7xl":"text-1xl hover:scale-110 duration-100")}>
+                        <h1 className={`font-bold cursor-pointer transition-transform `+(page.type===active?`text-7xl text-${props.data.settings.theme}-900`:`text-1xl hover:scale-110 duration-100 text-${props.data.settings.theme}-700`)}>
                             {page.icon} {page.name}
                         </h1>
                     </div>
@@ -29,10 +45,8 @@ export default function Rides(){
         </div>
         <br/>
         
-        {active==='ACTIVE'?<ActiveRides/>:
-        active==='ALL'?<AllRide/>:
-        active==='FRIENDS'?null:
-        active==='FAILED'?null:null}
+        {active==='ACTIVE'?<ActiveRides data={props.data}/>:
+        active==='ALL'?<AllRide/>:null}
 
         </div>
         </div>
